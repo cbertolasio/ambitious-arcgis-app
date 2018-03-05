@@ -1,21 +1,34 @@
-import Route from '@ember/routing/route';
-import { inject as service } from '@ember/service';
+import { computed } from '@ember/object';
+import Controller from '@ember/controller';
 
-export default Route.extend({
+export default Controller.extend({
+  // query parameters used by components
+  queryParams: ['start', 'num'],
+  start: 1,
+  num: 10,
+  // compute current page number based on start record
+  // and the number of records per page
+  pageNumber: computed('num', 'model.start', function () {
+    const pageSize = this.get('num');
+    const start = this.get('model.start');
+    return ((start - 1) / pageSize) + 1;
+  }),
 
-  // from ember-arcgis-portal-services
-  itemsService: service('items-service'),
-
-  // changes to these query parameter will cause this route to
-  // update the model by calling the "model()" hook again
-  queryParams: {
-    q: { refreshModel: true }
-  },
-
-  // the model hook is used to fetch any data based on route parameters
-  model (params) {
-    const itemsService = this.get('itemsService');
-    const q = params.q || '*';
-    return itemsService.search({ q });
+  actions: {
+    changePage (page) {
+      // calculate next start record based on
+      // the number of records per page
+      const pageSize = this.get('num');
+      const nextStart = ((page - 1) * pageSize) + 1;
+      this.set('start', nextStart);
+    },
+    doSearch (q) {
+      // NOTE: don't need to pass route name b/c same route
+      this.transitionToRoute({
+        // for a new query string, sart on first page
+        queryParams: { q , start: 1 }
+      });
+    }
   }
+
 });

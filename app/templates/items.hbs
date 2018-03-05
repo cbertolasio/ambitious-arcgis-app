@@ -27,5 +27,12 @@
         {{/each}}
       </tbody>
     </table>
+
+    {{item-pager
+  pageSize=num
+  totalCount=model.total
+  pageNumber=pageNumber
+  changePage=(action "changePage")
+}}
   </div>
 </div>

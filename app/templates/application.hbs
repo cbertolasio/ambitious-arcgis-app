@@ -1,17 +1,36 @@
-<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+{{#bs-navbar class="navbar-expand-md navbar-dark fixed-top bg-dark" as |navbar|}}
+  <div class="navbar-header">
+    {{navbar.toggle}}
     <a class="navbar-brand" href="#">Ambitious ArcGIS App</a>
+  </div>
+  {{#navbar.content}}
+    {{#navbar.nav as |nav|}}
+      {{#nav.item}}
+        {{#nav.link-to "index"}}Home{{/nav.link-to}}
+      {{/nav.item}}
+      {{#nav.item}}
+        {{#nav.link-to "items"}}Items{{/nav.link-to}}
+      {{/nav.item}}
+    {{/navbar.nav}}
 
-    <div class="collapse navbar-collapse">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                {{#link-to "index" class="nav-link"}}Home{{/link-to}}
-            </li>
-            <li class="nav-item">
-                {{#link-to "items" class="nav-link"}}Items{{/link-to}}
-            </li>
-        </ul>
-    </div>
-</nav>
+    {{#navbar.nav class="ml-auto" as |nav|}}
+{{#if session.isAuthenticated}}
+  {{#nav.dropdown as |dd|}}
+    {{#dd.toggle class="ml-auto"}}{{session.currentUser.fullName}}  <span class="caret"></span>{{/dd.toggle}}
+    {{#dd.menu as |ddm|}}
+      {{#ddm.item}}<a class="dropdown-item" href="#" {{action 'signout'}}>Sign Out</a>{{/ddm.item}}
+    {{/dd.menu}}
+  {{/nav.dropdown}}
+{{else}}
+    {{#nav.item}}<a class="nav-link active" href="#" {{action 'signin'}}>Sign In</a>{{/nav.item}}
+  {{/if}}
+{{/navbar.nav}}
+  {{/navbar.content}}
+
+
+{{/bs-navbar}}
+
+
 
 <div class="container mt-5">
     {{outlet}}
